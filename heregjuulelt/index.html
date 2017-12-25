@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--0f5878-->
+  <meta charset="utf-8">
+  <title>Блокчэйн нотариат</title>
+
+  <!-- Bootstrap Core CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Theme CSS -->
+  <link href="css/freelancer.css" rel="stylesheet">
+
+  <!-- css -->
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+  <!-- Fonts -->
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body id="page-top" class="index">
+<div id ="app">
+  <!-- Navigation -->
+  <nav id="mainNav" class="navbar navbar-inverse navbar-fixed-top navbar-custom">
+      <div class="container">
+          <div class="navbar-header page-scroll">
+              <a class="navbar-brand" href="#page-top">Блокчэйн нотариат</a>
+          </div>
+      </div>
+      <!-- /.container-fluid -->
+  </nav>
+
+  <!-- Header -->
+  <header v-if="!upload_visible">>
+      <div class="container" id="maincontent" tabindex="-1">
+          <div class="row">
+              <div class="col-lg-12">
+                  <div class="intro-text">
+                    <h1 class="name">Блокчэйн технологи</h1>
+                    <hr class="star-light">
+                    <span class="skills">Ethereum блокчэйн ашиглан баримтыг баталгаажуулах нь</span>
+                  </div>
+                  <div>
+                    <button type="button" class="btn btn-primary btn-lg buttonspace" v-on:click="display_upload">Баталгаажуулах</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </header>
+ 
+  <section id = "upload" v-if="upload_visible" v-cloak>
+     <div class="container">
+       <div class="row">
+         <div class="col-lg-12 text-center">
+           <div v-if="web3Missing">
+             <p>Энэхүү системийг ашиглахын тулд <a href="https://metamask.io/" target="_blank">Metamask</a> эсвэл <a href="https://github.com/ethereum/mist" target="_blank">Mist хөтөч</a>-ийг суулгана уу!</p>
+           </div>
+           <div v-if="!web3Missing">
+             <div v-if="!hash">
+               <h2>Файлаа зөөх талбар дээр чирч авчирна уу!</h2>
+               <hr class="star-light">
+             </div> 
+             <div v-bind:class="{ dragging: dragging }" v-if="!hash" id="drop_zone" ondrop="drop_handler(event);" ondragover="allowDrop(event)" ondragleave="dragout(event)">
+               <strong>Файл зөөх талбар ...</strong>
+             </div>
+             <div v-if="hash"> 
+               <h2>Файлын дэлгэрэнгүй мэдээлэл</h2>
+               <hr class="star-light">
+               <table class="table">
+                 <tr><th>Нэр</th><td>{{ name }}<span v-if="name.length==32">...</span></td></tr>
+                 <tr><th>Файл төрөл</th><td>{{ type }}<span v-if="name.length==32">...</span></td></tr>
+                 <tr><th>Хэмжээ</th><td>{{ size }} bytes</td></tr>
+                 <tr><th>Файлын сүүлийн өөрчлөлт</th><td>{{ lastModified }}</td></tr>
+                 <tr><th>Хэш утга</th><td>{{ hash }}</td></tr>
+               </table>
+             </div>
+             <div class="buttonspace" v-if="!animate">
+               <button type="button" class="btn btn-primary btn-lg" :disabled="!hash || !name || hash.length!=66" v-on:click="create_contract">Батлах</button>
+               <button type="button" class="btn btn-danger btn-lg"  v-on:click="cancel_upload">Цуцлах</button>
+             </div>
+           </div>
+           <div v-if="animate">
+             <p v-if="!error"><img src="img/animation.gif" /></p>
+
+             <p v-if="!error"> Гэрээг нь ethereum блокчэйнд хадгалагдах хүртэл хүлээнэ үү. Нэг миниут хүртэл хүлээгдэж болно. Хүлээлт дуусны дараа таныг нотариатын гэрчилгээний хэсэг рүү шилжүүлнэ.</p> 
+             <p><a v-bind:href="etherscanLink" target="_new">Блокчэйн гүйлгээ нь {{ tx }}.</a></p>
+             <p v-if="error">Алдаа гарлаа. Алдаа нь "{{ error }}".</p>
+           </div>
+         </div>
+       </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact">
+      <div class="container">
+          <div class="row text-center">
+            <div class="col-lg-3">
+              <i class="fa fa-file-word-o fa-5x icon-padding" aria-hidden="true"></i>
+              <i class="fa fa-file-pdf-o fa-5x icon-padding" aria-hidden="true"></i>
+              <i class="fa fa-file-image-o fa-5x icon-padding" aria-hidden="true"></i>
+              <p><strong><i>1.Бид зөвхөн docx,pdf,png өргөтгөлтэй файлыг дэмждэг.</i></strong></p>
+            </div>
+              <div class="col-lg-3">
+                  <i class="fa fa-file-text-o fa-5x icon-padding" aria-hidden="true"></i>
+                  <i class="fa fa-arrow-right fa-5x icon-padding" aria-hidden="true"></i>
+                  <i class="fa fa-slack fa-5x icon-padding" aria-hidden="true"></i>
+                  <p><strong><i>2.Бид таны документийг криптограф хэш рүү хөрвүүлдэг.</i></strong> </p>
+              </div>
+              <div class="col-lg-3">
+                  <i class="fa fa-slack fa-5x icon-padding" aria-hidden="true"></i>
+                  <i class="fa fa-arrow-right fa-5x icon-padding" aria-hidden="true"></i>
+                  <i class="fa fa-chain fa-5x icon-padding" aria-hidden="true"></i>
+                  <p><strong><i>3. Би хэш утгыг еthereum блокчэйн дээр байрушуулна.</i></strong> </p>
+              </div>
+              <div class="col-lg-3">
+                  <i class="fa fa-certificate fa-5x icon-padding" aria-hidden="true"></i>
+                  <i class="fa fa-check fa-5x icon-padding" aria-hidden="true"></i>
+                  <p><strong><i>4. Та нотариатаар гэрчүүлсэн гэрчилгээгээ хадгална уу!</i></strong> </p>
+              </div>
+          </div>
+      </div>
+  </section>
+
+  <!-- page up -->
+  <div class="scroll-top page-scroll hidden-sm hidden-xs hidden-lg hidden-md">
+      <a class="btn btn-primary" href="#page-top">
+          <i class="fa fa-chevron-up"></i>
+      </a>
+  </div>
+
+</div>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+
+  <!-- Bootstrap Core JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/vue"></script>
+  <script src="js/solidity.js"></script>
+  <script src="js/notar.js"></script>
+
+</body>
+
+</html>
