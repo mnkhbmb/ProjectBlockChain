@@ -1,0 +1,8 @@
+var ext = {docx: 'docx', pdf: 'pdf', png: 'png'};
+var jpg = "jpg";
+ 
+if(jpg in ext){
+	console.log("Im here guys");
+} else {
+	console.log('He is not her');
+}
